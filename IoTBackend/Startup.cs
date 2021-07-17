@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using MediatR;
 using IoTBackend.Application.Handlers;
 using IoTBackend.API.Extensions;
+using Microsoft.Extensions.Azure;
 
 namespace IoTBackend.API
 {
@@ -23,6 +24,7 @@ namespace IoTBackend.API
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.RegisterBlobStorage(Configuration.GetValue<string>("BLOBSTORAGE_CONSTR"), Configuration.GetValue<string>("BLOBSTORAGE_CONTAINER"));
             services.AddControllers();
             services.RegisterRepositories();
             services.RegisterMediatR();

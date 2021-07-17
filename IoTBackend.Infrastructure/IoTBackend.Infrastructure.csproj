@@ -10,4 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\IoTBackend.Application\IoTBackend.Application.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.9.1" />
+  </ItemGroup>
 </Project>

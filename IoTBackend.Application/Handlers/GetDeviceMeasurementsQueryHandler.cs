@@ -21,11 +21,8 @@ namespace IoTBackend.Application.Handlers
         {
             // Could be moved to a base class or handled by a middleware
             var validator = new GetDeviceMeasurementsQueryValidator();
-            validator.ValidateAndThrow(request);
-            var measurements = string.IsNullOrEmpty(request.SensorType) ?
-                await _repository.GetMeasurements(request.DeviceName, request.Date) :
-                await _repository.GetMeasurements(request.DeviceName, request.Date, request.SensorType);
-            return measurements;            
+            await validator.ValidateAndThrowAsync(request, cancellationToken: cancellationToken);
+            return await _repository.GetMeasurementsAsync(request.DeviceName, request.Date, request.SensorType);            
         }
     }
 }

@@ -16,13 +16,12 @@ namespace IoTBackend.Application.Test
     [TestClass]
     public class GetDeviceMeasurementsQueryHandlerTests
     {
-        private IEnumerable<DeviceMeasurementViewModel> GenerateMeasurements(DateTime date, int amount)
+        private static IEnumerable<DeviceMeasurementViewModel> GenerateMeasurements(DateTime date, int amount)
         {
             var result = new List<DeviceMeasurementViewModel>();
-            var rng = new Random();
-            for (int i = 0; i < amount; i++)
+            for (var i = 0; i < amount; i++)
             {
-                result.Add(new DeviceMeasurementViewModel("testsensor", date, rng.Next(1, 100)));
+                result.Add(new DeviceMeasurementViewModel("testsensor", date, "0"));
             }
             return result;
         }
@@ -34,14 +33,14 @@ namespace IoTBackend.Application.Test
             var expectedDate = new DateTime(2021, 07, 17);
             var expectedRecords = GenerateMeasurements(expectedDate, 10);
             var mockedRepo = new Mock<IDeviceMeasurementRepository>();
-            mockedRepo.Setup(r => r.GetMeasurements(expectedDeviceName, expectedDate)).ReturnsAsync(expectedRecords);
+            mockedRepo.Setup(r => r.GetMeasurementsAsync(expectedDeviceName, expectedDate, null)).ReturnsAsync(expectedRecords);
             var handler = new GetDeviceMeasurementsQueryHandler(mockedRepo.Object);
             var token = new CancellationToken();
             var query = new GetDeviceMeasurementsQuery(expectedDeviceName, expectedDate, null);
 
             var results = await handler.Handle(query, token);
 
-            mockedRepo.Verify(mr => mr.GetMeasurements(expectedDeviceName, expectedDate));
+            mockedRepo.Verify(mr => mr.GetMeasurementsAsync(expectedDeviceName, expectedDate, null));
             results.Should().NotBeNull().And.Equal(expectedRecords);
         }
 
@@ -53,14 +52,14 @@ namespace IoTBackend.Application.Test
             var expectedRecords = GenerateMeasurements(expectedDate, 10);
             var expectedSensorType = "temperature";
             var mockedRepo = new Mock<IDeviceMeasurementRepository>();
-            mockedRepo.Setup(r => r.GetMeasurements(expectedDeviceName, expectedDate, expectedSensorType)).ReturnsAsync(expectedRecords);
+            mockedRepo.Setup(r => r.GetMeasurementsAsync(expectedDeviceName, expectedDate, expectedSensorType)).ReturnsAsync(expectedRecords);
             var handler = new GetDeviceMeasurementsQueryHandler(mockedRepo.Object);
             var token = new CancellationToken();
             var query = new GetDeviceMeasurementsQuery(expectedDeviceName, expectedDate, expectedSensorType);
 
             var results = await handler.Handle(query, token);
 
-            mockedRepo.Verify(mr => mr.GetMeasurements(expectedDeviceName, expectedDate, expectedSensorType));
+            mockedRepo.Verify(mr => mr.GetMeasurementsAsync(expectedDeviceName, expectedDate, expectedSensorType));
             results.Should().NotBeNull().And.Equal(expectedRecords);
         }
 
