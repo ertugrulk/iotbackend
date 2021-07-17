@@ -11,6 +11,11 @@
     <PackageReference Include="MSTest.TestAdapter" Version="2.2.5" />
     <PackageReference Include="MSTest.TestFramework" Version="2.2.5" />
     <PackageReference Include="coverlet.collector" Version="1.2.0" />
+    <PackageReference Include="Moq" Version="4.16.1" />
+    <PackageReference Include="FluentAssertions" Version="5.10.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\IoTBackend.Application\IoTBackend.Application.csproj" />
+  </ItemGroup>
 </Project>

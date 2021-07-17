@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace IoTBackend.Infrastructure.Test
 {
     [TestClass]
-    public class UnitTest1
+    public class DeviceMeasurementRepositoryTest
     {
         [TestMethod]
         public void TestMethod1()
