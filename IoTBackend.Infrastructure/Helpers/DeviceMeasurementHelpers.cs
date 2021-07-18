@@ -2,15 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using IoTBackend.Application.ViewModels;
+using IoTBackend.Application.Models;
 
 namespace IoTBackend.Infrastructure.Helpers
 {
     internal static class DeviceMeasurementHelpers
     {
-        internal static async Task<IEnumerable<DeviceMeasurementViewModel>> ParseDeviceMeasurementFile(string sensorType, Stream stream)
+        internal static async Task<IEnumerable<DeviceMeasurement>> ParseDeviceMeasurementFile(string sensorType, Stream stream)
         {
-            var result = new List<DeviceMeasurementViewModel>();
+            var result = new List<DeviceMeasurement>();
             using var reader = new StreamReader(stream);
             while (!reader.EndOfStream)
             {
@@ -18,7 +18,7 @@ namespace IoTBackend.Infrastructure.Helpers
                 if (line == null) continue;
                 var splitLine = line.Split(";");
                 var date = DateTime.Parse(splitLine[0]);
-                result.Add(new DeviceMeasurementViewModel(sensorType, date, splitLine[1]));
+                result.Add(new DeviceMeasurement(sensorType, date, splitLine[1]));
             }
 
             return result;

@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IoTBackend.API.Controllers.v1
 {
-    [ApiController]
     [Route("/api/v1/devices")]
     public class DeviceController : BaseController
     {

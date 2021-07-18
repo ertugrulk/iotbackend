@@ -1,19 +1,22 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace IoTBackend.Application.ViewModels
 {
     public class DeviceMeasurementViewModel
     {
-        public string SensorType { get; }
         public DateTime DateTime { get; }
-        public string Value { get; } // to be checked if it's decimal 
+        public Dictionary<string, object> Sensors { get; }
 
-        public DeviceMeasurementViewModel(string sensorType, DateTime dateTime, string value)
+        public DeviceMeasurementViewModel(DateTime dateTime, Dictionary<string, object> sensors)
         {
-            SensorType = sensorType;
             DateTime = dateTime;
-            Value = value;
+            Sensors = sensors;
         }
 
+#pragma warning disable 8632
         public override bool Equals(object? obj)
         {
             if (obj == null || obj.GetType() != GetType())
@@ -22,13 +25,26 @@ namespace IoTBackend.Application.ViewModels
             }
 
             var other = (DeviceMeasurementViewModel) obj;
-            return DateTime == other.DateTime && Value == other.Value && SensorType == other.SensorType;
+            if (other.DateTime != this.DateTime) return false;
+            if ((Sensors == null && other.Sensors != null) || (Sensors != null && other.Sensors == null)) return false;
+            if (Sensors == null) return true;
+            if (Sensors.Count() != other.Sensors!.Count()) return false;
+            var sensorList = Sensors.ToList();
+            var otherSensorList = other.Sensors.ToList();
+            for (var i = 0; i < sensorList.Count; i++)
+            {
+                var (sourceKey, sourceValue) = sensorList[i];
+                var (destKey, destValue) = otherSensorList[i];
+                if (sourceKey != destKey || sourceValue != destValue) return false;
+            }
+
+            return true;
         }
-        
+#pragma warning restore 8632
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(SensorType, DateTime, Value);
+            return HashCode.Combine(DateTime, Sensors);
         }
     }
 }

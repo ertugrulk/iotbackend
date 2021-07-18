@@ -5,8 +5,8 @@ using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using IoTBackend.Application.Exceptions;
+using IoTBackend.Application.Models;
 using IoTBackend.Application.Repositories;
-using IoTBackend.Application.ViewModels;
 using IoTBackend.Infrastructure.Helpers;
 using IoTBackend.Infrastructure.Services;
 
@@ -21,20 +21,20 @@ namespace IoTBackend.Infrastructure.Repository
             _storageService = storageService;
         }
         
-        private async Task<IEnumerable<DeviceMeasurementViewModel>> GetMeasurementsFromHistoricalData(string deviceName, string folder, string expectedFile)
+        private async Task<IEnumerable<DeviceMeasurement>> GetMeasurementsFromHistoricalData(string deviceName, string folder, string expectedFile)
         {
             await using var zipStream = await _storageService.ReadDocumentStreamAsync($"{deviceName}/{folder}/{HistoricalZipFile}");
             using var archive = new ZipArchive(zipStream);
             var expectedEntry = archive.Entries.FirstOrDefault(e => e.Name == expectedFile);
             if (expectedEntry == null)
             {
-                return Enumerable.Empty<DeviceMeasurementViewModel>();
+                return Enumerable.Empty<DeviceMeasurement>();
             }
             
             return await DeviceMeasurementHelpers.ParseDeviceMeasurementFile(folder, expectedEntry.Open());
 
         }
-        public async Task<IEnumerable<DeviceMeasurementViewModel>> GetMeasurementsAsync(string deviceName, DateTime date, string sensorType)
+        public async Task<IEnumerable<DeviceMeasurement>> GetMeasurementsAsync(string deviceName, DateTime date, string sensorType)
         {
             if (string.IsNullOrEmpty(deviceName))
             {
@@ -56,7 +56,7 @@ namespace IoTBackend.Infrastructure.Repository
                 folders = folders.Where(f => f == sensorType).ToList();
             }
 
-            var results = new List<DeviceMeasurementViewModel>();
+            var results = new List<DeviceMeasurement>();
             foreach (var folder in folders)
             {
                 var path = $"{deviceName}/{folder}";

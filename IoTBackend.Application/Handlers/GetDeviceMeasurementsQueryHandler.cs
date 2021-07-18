@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
+using IoTBackend.Application.Mappers;
 using IoTBackend.Application.Queries;
 using IoTBackend.Application.Repositories;
 using IoTBackend.Application.Validators;
@@ -22,7 +23,8 @@ namespace IoTBackend.Application.Handlers
             // Could be moved to a base class or handled by a middleware
             var validator = new GetDeviceMeasurementsQueryValidator();
             await validator.ValidateAndThrowAsync(request, cancellationToken: cancellationToken);
-            return await _repository.GetMeasurementsAsync(request.DeviceName, request.Date, request.SensorType);            
+            var results = await _repository.GetMeasurementsAsync(request.DeviceName, request.Date, request.SensorType); 
+            return DeviceMeasurementViewModelMapper.MapIn(results);            
         }
     }
 }

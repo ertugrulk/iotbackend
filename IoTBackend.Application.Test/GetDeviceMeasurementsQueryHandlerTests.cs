@@ -4,24 +4,25 @@ using System.Threading;
 using IoTBackend.Application.Queries;
 using IoTBackend.Application.Handlers;
 using IoTBackend.Application.Repositories;
-using IoTBackend.Application.ViewModels;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using FluentValidation;
+using IoTBackend.Application.Mappers;
+using IoTBackend.Application.Models;
 
 namespace IoTBackend.Application.Test
 {
     [TestClass]
     public class GetDeviceMeasurementsQueryHandlerTests
     {
-        private static IEnumerable<DeviceMeasurementViewModel> GenerateMeasurements(DateTime date, int amount)
+        private static IEnumerable<DeviceMeasurement> GenerateMeasurements(DateTime date, int amount)
         {
-            var result = new List<DeviceMeasurementViewModel>();
+            var result = new List<DeviceMeasurement>();
             for (var i = 0; i < amount; i++)
             {
-                result.Add(new DeviceMeasurementViewModel("testsensor", date, "0"));
+                result.Add(new DeviceMeasurement("testsensor", date.AddMinutes(i), "0"));
             }
             return result;
         }
@@ -31,9 +32,10 @@ namespace IoTBackend.Application.Test
         {
             const string expectedDeviceName = "testdevice";
             var expectedDate = new DateTime(2021, 07, 17);
-            var expectedRecords = GenerateMeasurements(expectedDate, 10);
+            var mockedMeasurements = GenerateMeasurements(expectedDate, 10);
+            var expectedRecords = DeviceMeasurementViewModelMapper.MapIn(mockedMeasurements);
             var mockedRepo = new Mock<IDeviceMeasurementRepository>();
-            mockedRepo.Setup(r => r.GetMeasurementsAsync(expectedDeviceName, expectedDate, null)).ReturnsAsync(expectedRecords);
+            mockedRepo.Setup(r => r.GetMeasurementsAsync(expectedDeviceName, expectedDate, null)).ReturnsAsync(mockedMeasurements);
             var handler = new GetDeviceMeasurementsQueryHandler(mockedRepo.Object);
             var token = new CancellationToken();
             var query = new GetDeviceMeasurementsQuery(expectedDeviceName, expectedDate, null);
@@ -49,10 +51,11 @@ namespace IoTBackend.Application.Test
         {
             const string expectedDeviceName = "testdevice";
             var expectedDate = new DateTime(2021, 07, 17);
-            var expectedRecords = GenerateMeasurements(expectedDate, 10);
+            var mockedMeasurements = GenerateMeasurements(expectedDate, 10);
+            var expectedRecords = DeviceMeasurementViewModelMapper.MapIn(mockedMeasurements);
             const string expectedSensorType = "temperature";
             var mockedRepo = new Mock<IDeviceMeasurementRepository>();
-            mockedRepo.Setup(r => r.GetMeasurementsAsync(expectedDeviceName, expectedDate, expectedSensorType)).ReturnsAsync(expectedRecords);
+            mockedRepo.Setup(r => r.GetMeasurementsAsync(expectedDeviceName, expectedDate, expectedSensorType)).ReturnsAsync(mockedMeasurements);
             var handler = new GetDeviceMeasurementsQueryHandler(mockedRepo.Object);
             var token = new CancellationToken();
             var query = new GetDeviceMeasurementsQuery(expectedDeviceName, expectedDate, expectedSensorType);
