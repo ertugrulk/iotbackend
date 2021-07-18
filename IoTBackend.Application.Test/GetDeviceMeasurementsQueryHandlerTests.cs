@@ -29,7 +29,7 @@ namespace IoTBackend.Application.Test
         [TestMethod]
         public async Task GetDeviceMeasurementsQueryHandler_ReturnMeasurementsByDeviceNameAndDate_OK()
         {
-            var expectedDeviceName = "testdevice";
+            const string expectedDeviceName = "testdevice";
             var expectedDate = new DateTime(2021, 07, 17);
             var expectedRecords = GenerateMeasurements(expectedDate, 10);
             var mockedRepo = new Mock<IDeviceMeasurementRepository>();
@@ -47,10 +47,10 @@ namespace IoTBackend.Application.Test
         [TestMethod]
         public async Task GetDeviceMeasurementsQueryHandler_ReturnMeasurementsByDeviceNameDateAndSensorType_OK()
         {
-            var expectedDeviceName = "testdevice";
+            const string expectedDeviceName = "testdevice";
             var expectedDate = new DateTime(2021, 07, 17);
             var expectedRecords = GenerateMeasurements(expectedDate, 10);
-            var expectedSensorType = "temperature";
+            const string expectedSensorType = "temperature";
             var mockedRepo = new Mock<IDeviceMeasurementRepository>();
             mockedRepo.Setup(r => r.GetMeasurementsAsync(expectedDeviceName, expectedDate, expectedSensorType)).ReturnsAsync(expectedRecords);
             var handler = new GetDeviceMeasurementsQueryHandler(mockedRepo.Object);

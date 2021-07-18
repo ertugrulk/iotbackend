@@ -1,15 +1,10 @@
-using System;
-using System.IO;
-using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using MediatR;
-using IoTBackend.Application.Handlers;
 using IoTBackend.API.Extensions;
-using Microsoft.Extensions.Azure;
+using IoTBackend.API.Filters;
 
 namespace IoTBackend.API
 {
@@ -24,8 +19,9 @@ namespace IoTBackend.API
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.RegisterBlobStorage(Configuration.GetValue<string>("BLOBSTORAGE_CONSTR"), Configuration.GetValue<string>("BLOBSTORAGE_CONTAINER"));
-            services.AddControllers();
+            services.RegisterBlobStorage(Configuration.GetValue<string>("BLOBSTORAGE_CONSTR"), 
+                Configuration.GetValue<string>("BLOBSTORAGE_CONTAINER"));
+            services.AddControllers(options => { options.Filters.Add(new HttpResponseExceptionFilter()); });
             services.RegisterRepositories();
             services.RegisterMediatR();
             services.RegisterSwagger();

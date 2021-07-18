@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using IoTBackend.Infrastructure.Helpers;
 using IoTBackend.Infrastructure.Repository;
 using IoTBackend.Infrastructure.Services;
 using IoTBackend.Infrastructure.Test.Helpers;
@@ -17,7 +18,7 @@ namespace IoTBackend.Infrastructure.Test
         public async Task DeviceMeasurementRepository_ReturnsEmptyListWhenNoFileExists()
         {
             var mockedStorageService = new Mock<IStorageService>();
-            mockedStorageService.Setup(mss => mss.ListFolderAsync(It.IsAny<string>()))
+            mockedStorageService.Setup(mss => mss.ListFolderAsync(It.IsAny<string>(),It.IsAny<bool>()))
                 .ReturnsAsync(Enumerable.Empty<string>());
             var repository = new DeviceMeasurementRepository(mockedStorageService.Object);
 
@@ -36,14 +37,9 @@ namespace IoTBackend.Infrastructure.Test
             var fileName = $"{date:yyyy-MM-dd}.csv";
             var measurements = MockedDeviceMeasurementHelper.GenerateMeasurements(sensorType, date, 1);
             var mockedFileContents = MockedDeviceMeasurementHelper.MapMeasurementsToFile(measurements);
-            var mockedStorageService = new Mock<IStorageService>();
-            mockedStorageService.Setup(mss => mss.ListFolderAsync(deviceName))
-                .ReturnsAsync(new[] { sensorType });
-            mockedStorageService.Setup(mss => mss.ListFolderAsync($"{deviceName}/{sensorType}"))
-                .ReturnsAsync(new[] {fileName});
-            mockedStorageService.Setup(mss => mss.ReadDocumentAsStringAsync($"{deviceName}/{sensorType}/{fileName}"))
-                .ReturnsAsync(mockedFileContents);
-            var repository = new DeviceMeasurementRepository(mockedStorageService.Object);
+            var mockedStorageService = new MockedStorageService();
+            mockedStorageService.UploadFile($"{deviceName}/{sensorType}/{fileName}", mockedFileContents);
+            var repository = new DeviceMeasurementRepository(mockedStorageService);
 
             var results = await repository.GetMeasurementsAsync(deviceName, date, sensorType);
             results.Should().Equal(measurements);
@@ -57,19 +53,15 @@ namespace IoTBackend.Infrastructure.Test
             const int measurementPerSensorType = 2;
             var date = new DateTime(2021, 07, 17);
             var fileName = $"{date:yyyy-MM-dd}.csv";
-            var mockedStorageService = new Mock<IStorageService>();
+            var mockedStorageService = new MockedStorageService();
             foreach (var sensorType in sensorTypes)
             {
                 var measurements = MockedDeviceMeasurementHelper.GenerateMeasurements(sensorType, date, 2);
                 var mockedFileContents = MockedDeviceMeasurementHelper.MapMeasurementsToFile(measurements);
-                mockedStorageService.Setup(mss => mss.ListFolderAsync($"{deviceName}/{sensorType}"))
-                    .ReturnsAsync(new[] {"bogus.csv", fileName, "bogus2.csv"});
-                mockedStorageService.Setup(mss => mss.ReadDocumentAsStringAsync($"{deviceName}/{sensorType}/{fileName}"))
-                    .ReturnsAsync(mockedFileContents);
+                mockedStorageService.UploadFile($"{deviceName}/{sensorType}/bogus.csv", mockedFileContents);
+                mockedStorageService.UploadFile($"{deviceName}/{sensorType}/{fileName}", mockedFileContents);
             }
-            mockedStorageService.Setup(mss => mss.ListFolderAsync(deviceName))
-                .ReturnsAsync(sensorTypes);
-            var repository = new DeviceMeasurementRepository(mockedStorageService.Object);
+            var repository = new DeviceMeasurementRepository(mockedStorageService);
 
             var results = await repository.GetMeasurementsAsync(deviceName, date, null);
             

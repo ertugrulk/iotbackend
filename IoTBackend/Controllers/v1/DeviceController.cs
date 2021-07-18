@@ -25,7 +25,7 @@ namespace IoTBackend.API.Controllers.v1
         /// <param name="sensorType">Optional field to filter measurements by sensor type, i.e. temperature</param>
         /// <returns>List of measurements</returns>
         /// <response code="404">Specified device does not exist</response>
-        [ProducesResponseType(typeof(DeviceMeasurementViewModel[]), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(DeviceMeasurementViewModel[]),StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
         [HttpGet("{deviceName}/measurements")]
         public async Task<IActionResult> GetDeviceMeasurementsByDate(string deviceName, [FromQuery, Required] DateTime date, [FromQuery] string sensorType)

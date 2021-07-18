@@ -20,11 +20,10 @@ namespace IoTBackend.Infrastructure.Repository
         {
             _storageService = storageService;
         }
+        
         private async Task<IEnumerable<DeviceMeasurementViewModel>> GetMeasurementsFromHistoricalData(string deviceName, string folder, string expectedFile)
         {
-            await using var zipStream = new MemoryStream();
-            await _storageService.ReadDocumentStreamAsync($"{deviceName}/{folder}/{HistoricalZipFile}",
-                zipStream);
+            await using var zipStream = await _storageService.ReadDocumentStreamAsync($"{deviceName}/{folder}/{HistoricalZipFile}");
             using var archive = new ZipArchive(zipStream);
             var expectedEntry = archive.Entries.FirstOrDefault(e => e.Name == expectedFile);
             if (expectedEntry == null)
@@ -32,9 +31,7 @@ namespace IoTBackend.Infrastructure.Repository
                 return Enumerable.Empty<DeviceMeasurementViewModel>();
             }
             
-            using var sr = new StreamReader(expectedEntry.Open());
-            var contents = await sr.ReadToEndAsync();
-            return DeviceMeasurementHelpers.ParseDeviceMeasurementFile(folder, contents);
+            return await DeviceMeasurementHelpers.ParseDeviceMeasurementFile(folder, expectedEntry.Open());
 
         }
         public async Task<IEnumerable<DeviceMeasurementViewModel>> GetMeasurementsAsync(string deviceName, DateTime date, string sensorType)
@@ -46,7 +43,7 @@ namespace IoTBackend.Infrastructure.Repository
             IEnumerable<string> folders;
             try
             {
-                folders = await _storageService.ListFolderAsync(deviceName);
+                folders = await _storageService.ListFolderAsync(deviceName, true);
             }
             catch (DirectoryNotFoundException)
             {
@@ -67,8 +64,8 @@ namespace IoTBackend.Infrastructure.Repository
                 var expectedFile = $"{date:yyyy-MM-dd}.csv";
                 if (files.Contains(expectedFile))
                 {
-                    var contents = await _storageService.ReadDocumentAsStringAsync($"{path}/{expectedFile}");
-                    results.AddRange(DeviceMeasurementHelpers.ParseDeviceMeasurementFile(folder, contents));
+                    await using var stream = await _storageService.ReadDocumentStreamAsync($"{path}/{expectedFile}");
+                    results.AddRange(await DeviceMeasurementHelpers.ParseDeviceMeasurementFile(folder, stream));
                 }
                 else // Extract contents from archival zip file
                 {

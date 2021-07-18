@@ -16,33 +16,31 @@ namespace IoTBackend.Infrastructure.Services
             _containerName = containerName;
         }
 
-        public async Task<IEnumerable<string>> ListFolderAsync(string path)
+        public async Task<IEnumerable<string>> ListFolderAsync(string path, bool foldersOnly = false)
         {
+            var pathWithTrailingSlash = path.EndsWith("/") ? path : path + "/";
             var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
             var results = new List<string>();
-            await foreach (var blob in containerClient.GetBlobsAsync())
+            var blobItems = containerClient.GetBlobsByHierarchyAsync(prefix: pathWithTrailingSlash, delimiter:"/");
+            await foreach (var blob in blobItems)
             {
-                results.Add(blob.Name);
+                if ((!foldersOnly || blob.IsBlob) && foldersOnly) continue;
+                // Clear path from the names
+                var name = (blob.Blob?.Name ?? blob.Prefix).TrimEnd('/');
+                if (name.StartsWith(pathWithTrailingSlash))
+                {
+                    name = name[pathWithTrailingSlash.Length..];
+                }
+                results.Add(name);
             }
             return results;
         }
-        
-        public async Task<string> ReadDocumentAsStringAsync(string path)
-        {
-            var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
-            var blockBlob = containerClient.GetBlobClient(path);
-            var stream = new MemoryStream();
-            await blockBlob.DownloadToAsync(stream);
-            using var reader = new StreamReader(stream);
-            var result = (await reader.ReadToEndAsync()).Trim();
-            return result;
-        }
 
-        public async Task ReadDocumentStreamAsync(string path, Stream stream)
+        public async Task<Stream> ReadDocumentStreamAsync(string path)
         {
             var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
             var blockBlob = containerClient.GetBlobClient(path);
-            await blockBlob.DownloadToAsync(stream);
+            return await blockBlob.OpenReadAsync();
         }
     }
 }
