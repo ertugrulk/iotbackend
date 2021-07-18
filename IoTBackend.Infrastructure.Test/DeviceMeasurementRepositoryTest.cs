@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using IoTBackend.Application.Exceptions;
 using IoTBackend.Infrastructure.Helpers;
 using IoTBackend.Infrastructure.Repository;
 using IoTBackend.Infrastructure.Services;
@@ -15,15 +16,19 @@ namespace IoTBackend.Infrastructure.Test
     public class DeviceMeasurementRepositoryTest
     {
         [TestMethod]
-        public async Task DeviceMeasurementRepository_ReturnsEmptyListWhenNoFileExists()
+        public async Task DeviceMeasurementRepository_ReturnsEmptyListWhenDateDoesNotExist()
         {
-            var mockedStorageService = new Mock<IStorageService>();
-            mockedStorageService.Setup(mss => mss.ListFolderAsync(It.IsAny<string>(),It.IsAny<bool>()))
-                .ReturnsAsync(Enumerable.Empty<string>());
-            var repository = new DeviceMeasurementRepository(mockedStorageService.Object);
+            var deviceName = "testdevice";
+            var sensorType = "temperature";
+            var existingFileDate = new DateTime(2021, 07, 17);
+            var existingFileName = $"{existingFileDate:yyyy-MM-dd}.csv";
+            var existingFilePath = $"{deviceName}/{sensorType}/{existingFileName}";
+            var requestedDate = new DateTime(2021, 07, 18);
+            var mockedStorageService = new MockedStorageService();
+            mockedStorageService.UploadFile(existingFilePath, "random;csv;contents");
+            var repository = new DeviceMeasurementRepository(mockedStorageService);
 
-            var results = await repository.GetMeasurementsAsync(deviceName: "testdevice", date: new DateTime(2021, 07, 17),
-                sensorType: null);
+            var results = await repository.GetMeasurementsAsync(deviceName, requestedDate, sensorType);
 
             results.Should().BeEmpty();
         }
@@ -71,6 +76,20 @@ namespace IoTBackend.Infrastructure.Test
             }
         }
 
+        [TestMethod]
+        public void DeviceMeasurementRepository_ThrowsErrorWhenInvalidDeviceNameIsSent()
+        {
+            const string deviceName = "invalid-device";
+            var date = new DateTime(2021, 07, 17);
+
+            var mockedStorageService = new MockedStorageService();
+            var repository = new DeviceMeasurementRepository(mockedStorageService);
+
+            FluentActions
+                .Invoking(() => repository.GetMeasurementsAsync(deviceName, date, null))
+                .Should()
+                .ThrowAsync<DeviceNotFoundException>();
+        }
         [TestMethod]
         public void DeviceMeasurementRepository_ExtractsMeasurementsFromHistoricalZipWhenFileDoesNotExist()
         {

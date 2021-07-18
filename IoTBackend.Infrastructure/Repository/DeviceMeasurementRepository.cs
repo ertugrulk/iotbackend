@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
@@ -40,15 +39,13 @@ namespace IoTBackend.Infrastructure.Repository
             {
                 throw new ArgumentNullException(nameof(deviceName));
             }
-            IEnumerable<string> folders;
-            try
-            {
-                folders = await _storageService.ListFolderAsync(deviceName, true);
-            }
-            catch (DirectoryNotFoundException)
+            
+            var folders = (await _storageService.ListFolderAsync(deviceName, true)).ToList();
+            if (!folders.Any())
             {
                 throw new DeviceNotFoundException(deviceName);
             }
+
 
             // Filter sensors if needed
             if (!string.IsNullOrEmpty(sensorType))

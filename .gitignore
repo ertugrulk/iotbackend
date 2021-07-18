@@ -1,6 +1,6 @@
 IoTBackend/Properties/launchSettings.json
 
-
+.vscode
 # globs
 Makefile.in
 *.userprefs

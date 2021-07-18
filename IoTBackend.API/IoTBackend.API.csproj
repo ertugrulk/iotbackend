@@ -12,6 +12,11 @@
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'IoTBackend' ">
     <StartAction>Project</StartAction>
     <ExternalConsole>true</ExternalConsole>
+    <EnvironmentVariables>
+      <Variable name="BLOBSTORAGE_CONSTR" value="BlobEndpoint=https://sigmaiotexercisetest.blob.core.windows.net/;QueueEndpoint=https://sigmaiotexercisetest.queue.core.windows.net/;FileEndpoint=https://sigmaiotexercisetest.file.core.windows.net/;TableEndpoint=https://sigmaiotexercisetest.table.core.windows.net/;SharedAccessSignature=sv=2017-11-09&amp;ss=bfqt&amp;srt=sco&amp;sp=rl&amp;se=2028-09-27T16:27:24Z&amp;st=2018-09-27T08:27:24Z&amp;spr=https&amp;sig=eYVbQneRuiGn103jUuZvNa6RleEeoCFx1IftVin6wuA%3D" />
+      <Variable name="BLOBSTORAGE_CONTAINER" value="iotbackend" />
+      <Variable name="ASPNETCORE_ENVIRONMENT" value="Development" />
+    </EnvironmentVariables>
     <LaunchUrl>swagger</LaunchUrl>
     <ApplicationURL>https://localhost:5001;http://localhost:5000</ApplicationURL>
   </PropertyGroup>

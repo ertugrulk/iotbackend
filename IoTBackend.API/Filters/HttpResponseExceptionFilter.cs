@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using FluentValidation;
 using IoTBackend.Application.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -14,9 +15,12 @@ namespace IoTBackend.API.Filters
 
         private (HttpStatusCode, string) GetResponseFromException(Exception ex)
         {
-            if (ex is DeviceNotFoundException)
-                return (HttpStatusCode.NotFound, "Device not found");
-            return (HttpStatusCode.InternalServerError, ex.Message);
+            return ex switch
+            {
+                DeviceNotFoundException _ => (HttpStatusCode.NotFound, "Device not found"),
+                ValidationException _ => (HttpStatusCode.BadRequest, ex.Message),
+                _ => (HttpStatusCode.InternalServerError, ex.Message)
+            };
         }
         public void OnActionExecuted(ActionExecutedContext context)
         {
