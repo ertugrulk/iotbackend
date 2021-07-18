@@ -25,9 +25,10 @@ dotnet run
 - Stack: ASP.NET Core, CQRS with MediatR, FluentValidation, FluentAssertions, MSUNIT & Moq.
 - Sensors are "generic": if a sensor data exists for a given day, it will be loaded and converted to decimal if possible. Sensor types (rainfall, humidity, temperature) may be modified without having to change the project.
 
-## Possible areas of improvement
+## Concerns & possible areas of improvement
 1. Paging support in the endpoints (offset/limit).
 2. More unit tests in Repository project to test Historical archive coverage.
 3. Validation error messages could be returned as a JSON content instead of a string.
 4. Caching can be implemented to improve the speed. 
 5. API is open as per requirements, however users of the API would need to know the device names. It can be argued that a new endpoint which returns list of devices is necessary.
+6. Logging and/or app insights could be implemented. Right now erroneous data is ignored but it might be desired to figure out such cases.

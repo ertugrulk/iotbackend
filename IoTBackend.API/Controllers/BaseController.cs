@@ -6,11 +6,11 @@ namespace IoTBackend.API.Controllers
     [ApiController]
     public abstract class BaseController : ControllerBase
     {
-        protected readonly IMediator _mediator;
+        protected readonly IMediator Mediator;
 
         protected BaseController(IMediator mediator)
         {
-            _mediator = mediator;
+            Mediator = mediator;
         }
     }
 }

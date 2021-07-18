@@ -6,7 +6,6 @@ using IoTBackend.Application.ViewModels;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ValidationException = FluentValidation.ValidationException;
 
 namespace IoTBackend.API.Controllers.v1
 {
@@ -32,7 +31,7 @@ namespace IoTBackend.API.Controllers.v1
         [HttpGet("{deviceName}/measurements")]
         public async Task<IActionResult> GetDeviceMeasurementsByDate(string deviceName, [FromQuery, Required] DateTime date, [FromQuery] string sensorType)
         {
-            return Ok(await _mediator.Send(new GetDeviceMeasurementsQuery(deviceName, date, sensorType)));
+            return Ok(await Mediator.Send(new GetDeviceMeasurementsQuery(deviceName, date, sensorType)));
         }
     }
 }

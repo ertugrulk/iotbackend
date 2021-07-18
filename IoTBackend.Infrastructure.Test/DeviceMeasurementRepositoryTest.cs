@@ -15,8 +15,8 @@ namespace IoTBackend.Infrastructure.Test
         [TestMethod]
         public async Task DeviceMeasurementRepository_ReturnsEmptyListWhenDateDoesNotExist()
         {
-            var deviceName = "testdevice";
-            var sensorType = "temperature";
+            const string deviceName = "testdevice";
+            const string sensorType = "temperature";
             var existingFileDate = new DateTime(2021, 07, 17);
             var existingFileName = $"{existingFileDate:yyyy-MM-dd}.csv";
             var existingFilePath = $"{deviceName}/{sensorType}/{existingFileName}";

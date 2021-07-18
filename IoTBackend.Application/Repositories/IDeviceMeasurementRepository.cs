@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using IoTBackend.Application.Models;
-using IoTBackend.Application.ViewModels;
 
 namespace IoTBackend.Application.Repositories
 {

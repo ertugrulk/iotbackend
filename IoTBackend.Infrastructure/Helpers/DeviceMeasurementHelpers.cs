@@ -14,11 +14,19 @@ namespace IoTBackend.Infrastructure.Helpers
             using var reader = new StreamReader(stream);
             while (!reader.EndOfStream)
             {
-                var line = await reader.ReadLineAsync();
-                if (line == null) continue;
-                var splitLine = line.Split(";");
-                var date = DateTime.Parse(splitLine[0]);
-                result.Add(new DeviceMeasurement(sensorType, date, splitLine[1]));
+                try
+                {
+                    var line = await reader.ReadLineAsync();
+                    if (line == null) continue;
+                    var splitLine = line.Split(";");
+                    var date = DateTime.Parse(splitLine[0]);
+                    result.Add(new DeviceMeasurement(sensorType, date, splitLine[1]));
+                }
+                catch
+                {
+                    // #TODO: Logging
+                }
+                    
             }
 
             return result;
