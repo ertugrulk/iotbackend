@@ -32,7 +32,7 @@ namespace IoTBackend.Application.Models
             }
 
             var other = (DeviceMeasurement) obj;
-            return DateTime == other.DateTime && (string)Value == (string)other.Value && SensorType == other.SensorType;
+            return DateTime == other.DateTime && Value?.ToString() == other.Value?.ToString() && SensorType == other.SensorType;
         }
 #pragma warning restore 8632
 

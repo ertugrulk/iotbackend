@@ -12,9 +12,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace IoTBackend.API.Extensions
 {
-    internal static class ServiceCollectionExtensions
+    public static class ServiceCollectionExtensions
     {
-        internal static void RegisterBlobStorage(this IServiceCollection services, string blobStorageConnectionString, string containerName)
+        public static void RegisterBlobStorage(this IServiceCollection services, string blobStorageConnectionString, string containerName)
         {
             services.AddAzureClients(builder =>
             {
@@ -22,17 +22,17 @@ namespace IoTBackend.API.Extensions
             });
             services.AddTransient<IStorageService>(sp => new AzureBlobStorageService(sp.GetService<BlobServiceClient>(), containerName));
         }
-        internal static void RegisterRepositories(this IServiceCollection services)
+        public static void RegisterRepositories(this IServiceCollection services)
         {
             services.AddTransient<IDeviceMeasurementRepository, DeviceMeasurementRepository>();
         }
 
-        internal static void RegisterMediatR(this IServiceCollection services)
+        public static void RegisterMediatR(this IServiceCollection services)
         {
             services.AddMediatR(typeof(GetDeviceMeasurementsQueryHandler).Assembly);
         }
 
-        internal static void RegisterSwagger(this IServiceCollection services)
+        public static void RegisterSwagger(this IServiceCollection services)
         {
             services.AddSwaggerGen(c =>
             {

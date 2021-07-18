@@ -5,10 +5,10 @@ using IoTBackend.Application.Models;
 
 namespace IoTBackend.Infrastructure.Test.Helpers
 {
-    internal static class MockedDeviceMeasurementHelper
+    public static class MockedDeviceMeasurementHelper
     {
         // Could be moved a common assembly with application.test
-        internal static IEnumerable<DeviceMeasurement> GenerateMeasurements(string sensorType, DateTime date, int amount)
+        public static IEnumerable<DeviceMeasurement> GenerateMeasurements(string sensorType, DateTime date, int amount)
         {
             var result = new List<DeviceMeasurement>();
             for (var i = 0; i < amount; i++)
@@ -19,7 +19,7 @@ namespace IoTBackend.Infrastructure.Test.Helpers
             return result;
         }
         
-        internal static string MapMeasurementsToFile(IEnumerable<DeviceMeasurement> data)
+        public static string MapMeasurementsToFile(IEnumerable<DeviceMeasurement> data)
         {
             return string.Join("\n", data.Select(d => $"{d.DateTime:s};{d.Value}"));
         }

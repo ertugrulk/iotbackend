@@ -3,12 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using IoTBackend.Application.Exceptions;
-using IoTBackend.Infrastructure.Helpers;
 using IoTBackend.Infrastructure.Repository;
-using IoTBackend.Infrastructure.Services;
 using IoTBackend.Infrastructure.Test.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 
 namespace IoTBackend.Infrastructure.Test
 {

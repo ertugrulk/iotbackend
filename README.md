@@ -28,7 +28,6 @@ dotnet run
 ## Possible areas of improvement
 1. Paging support in the endpoints (offset/limit).
 2. More unit tests in Repository project to test Historical archive coverage.
-3. Integration tests.
-4. Validation error messages could be returned as a JSON content instead of a string.
-5. Caching can be implemented to improve the speed. 
-6. API is open as per requirements, however users of the API would need to know the device names. It can be argued that a new endpoint which returns list of devices is necessary.
+3. Validation error messages could be returned as a JSON content instead of a string.
+4. Caching can be implemented to improve the speed. 
+5. API is open as per requirements, however users of the API would need to know the device names. It can be argued that a new endpoint which returns list of devices is necessary.

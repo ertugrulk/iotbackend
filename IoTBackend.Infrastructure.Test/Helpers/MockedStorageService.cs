@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using IoTBackend.Infrastructure.Services;
 
-namespace IoTBackend.Infrastructure.Helpers
+namespace IoTBackend.Infrastructure.Test.Helpers
 {
     public class MockedStorageService : IStorageService
     {

@@ -12,7 +12,7 @@ using FluentValidation;
 using IoTBackend.Application.Mappers;
 using IoTBackend.Application.Models;
 
-namespace IoTBackend.Application.Test
+namespace IoTBackend.Application.Test.Handlers
 {
     [TestClass]
     public class GetDeviceMeasurementsQueryHandlerTests
